@@ -10,7 +10,7 @@ import Foundation
 class TimerManager: ObservableObject {
     @Published var remainingTime: TimeInterval = 0
     @Published var totalTime: TimeInterval = 0
-    var timer: Timer?
+    private var timer: Timer?
 
     var onTimerUpdate: ((Double) -> Void)?
     var onTimerComplete: (() -> Void)?
@@ -19,7 +19,7 @@ class TimerManager: ObservableObject {
         totalTime = duration
         remainingTime = duration
 
-        timer?.invalidate()
+        timer?.invalidate() // Stop any existing timer
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
     }
 
@@ -27,10 +27,11 @@ class TimerManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         remainingTime = 0
+        totalTime = 0
         onTimerComplete?()
     }
 
-    @objc func updateTimer() {
+    @objc private func updateTimer() {
         guard remainingTime > 0 else {
             stopTimer()
             return
