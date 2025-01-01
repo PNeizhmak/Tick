@@ -1,0 +1,3 @@
+# Tick - macOS Menu Bar Timer
+
+Tick is a minimal macOS timer app designed for simplicity and functionality. It integrates seamlessly into menu bar with a transparent overlay and a dynamic progress bar, making it a perfect companion for staying productive
