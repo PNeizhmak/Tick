@@ -93,19 +93,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                             defer: false)
         panel.title = "Set Timer Duration"
 
+        panel.delegate = self
+
+        let descriptionLabel = NSTextField(labelWithString: "Set the duration for the timer:")
+        descriptionLabel.frame = NSRect(x: 50, y: 150, width: 200, height: 20)
+        descriptionLabel.alignment = .center
+        descriptionLabel.isEditable = false
+
         let timePicker = NSDatePicker()
         timePicker.datePickerMode = .single
         timePicker.datePickerElements = [.hourMinuteSecond]
         timePicker.dateValue = Calendar.current.date(from: DateComponents(hour: 0, minute: 5)) ?? Date()
-        timePicker.frame = NSRect(x: 50, y: 90, width: 200, height: 30)
+        timePicker.frame = NSRect(x: 50, y: 100, width: 200, height: 30)
+
+        let hintLabel = NSTextField(labelWithString: "Hours : Minutes : Seconds")
+        hintLabel.frame = NSRect(x: 50, y: 70, width: 200, height: 20)
+        hintLabel.alignment = .center
+        hintLabel.font = NSFont.systemFont(ofSize: 10)
+        hintLabel.textColor = NSColor.secondaryLabelColor
 
         let okButton = NSButton(title: "OK", target: self, action: #selector(confirmTimePickerDuration))
         okButton.frame = NSRect(x: 100, y: 30, width: 100, height: 30)
 
         if let contentView = panel.contentView {
+            contentView.addSubview(descriptionLabel)
             contentView.addSubview(timePicker)
+            contentView.addSubview(hintLabel)
             contentView.addSubview(okButton)
         }
+
+        timePicker.tag = 1001
 
         panel.isFloatingPanel = true
 
@@ -114,7 +131,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func confirmTimePickerDuration(_ sender: NSButton) {
         guard let panel = sender.window as? NSPanel,
-              let timePicker = panel.contentView?.subviews.first(where: { $0 is NSDatePicker }) as? NSDatePicker else { return }
+              let timePicker = panel.contentView?.viewWithTag(1001) as? NSDatePicker else { return }
 
         let selectedDate = timePicker.dateValue
         let calendar = Calendar.current
@@ -123,21 +140,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let totalSeconds = (components.hour ?? 0) * 3600 + (components.minute ?? 0) * 60 + (components.second ?? 0)
 
         guard totalSeconds > 0 else {
-            showInvalidDurationError()
+            showInvalidDurationError(message: "Please select a duration greater than 0.")
             return
         }
 
-        UserDefaults.standard.set(totalSeconds, forKey: "timerDuration")
         startTimer(with: TimeInterval(totalSeconds))
 
         panel.close()
         NSApp.stopModal()
     }
 
-    func showInvalidDurationError() {
+    func showInvalidDurationError(message: String) {
         let errorAlert = NSAlert()
         errorAlert.messageText = "Invalid Duration"
-        errorAlert.informativeText = "Please select a duration greater than 0."
+        errorAlert.informativeText = message
         errorAlert.alertStyle = .critical
         errorAlert.addButton(withTitle: "OK")
         errorAlert.runModal()
@@ -151,7 +167,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         overlayController.window?.orderOut(nil)
     }
 
-
     func updateStatusBarTitle(progress: Double) {
         if let button = statusItem.button {
             let title: String
@@ -164,7 +179,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             button.title = title
 
-            // Update toolTip with the remaining time
             let minutes = Int(timerManager.remainingTime) / 60
             let seconds = Int(timerManager.remainingTime) % 60
             button.toolTip = String(format: "Time Remaining: %02d:%02d", minutes, seconds)
@@ -198,5 +212,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             return .systemRed
         }
+    }
+}
+
+extension AppDelegate: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        NSApp.stopModal()
     }
 }
