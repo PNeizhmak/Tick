@@ -21,15 +21,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         overlayController.showWindow(nil)
     }
 
+
     func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem.button {
-            button.title = "⏱"
+            button.image = NSImage(named: "icon-timer")
+            button.image?.isTemplate = true
             button.toolTip = "Time Remaining: 00:00"
         }
     }
-
+    
     func setupMenu() {
         let menu = NSMenu()
 
@@ -55,10 +57,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(quickStartMenu)
 
         menu.addItem(NSMenuItem(title: "Set Timer Duration...", action: #selector(promptSetCustomDuration), keyEquivalent: ""))
-
+        
+        menu.addItem(NSMenuItem.separator())
         let resetItem = NSMenuItem(title: "Stop/Reset Timer", action: #selector(stopAndResetTimer), keyEquivalent: "R")
         menu.addItem(resetItem)
-
+        
+        menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate), keyEquivalent: "Q"))
 
         statusItem.menu = menu
@@ -169,21 +173,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func updateStatusBarTitle(progress: Double) {
         if let button = statusItem.button {
-            let title: String
             if progress > 0.5 {
-                title = "🟢"
+                button.title = "🟢"
             } else if progress > 0.2 {
-                title = "🟡"
+                button.title = "🟡"
             } else {
-                title = "🔴"
+                button.title = "🔴"
             }
-            button.title = title
+            button.image = nil
 
             let minutes = Int(timerManager.remainingTime) / 60
             let seconds = Int(timerManager.remainingTime) % 60
             button.toolTip = String(format: "Time Remaining: %02d:%02d", minutes, seconds)
         }
     }
+
 
     func updateMenuCountdown() {
         if let menu = statusItem.menu, let timerItem = menu.items.first {
@@ -195,7 +199,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func resetStatusBarIcon() {
         if let button = statusItem.button {
-            button.title = "⏱"
+            button.title = ""
+            button.image = NSImage(named: "icon-timer")
+            button.image?.isTemplate = true
             button.toolTip = "Time Remaining: 00:00"
         }
 
