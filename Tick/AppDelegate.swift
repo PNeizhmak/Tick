@@ -59,11 +59,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: "Set Timer Duration...", action: #selector(promptSetCustomDuration), keyEquivalent: ""))
         
         menu.addItem(NSMenuItem.separator())
-        let resetItem = NSMenuItem(title: "Stop/Reset Timer", action: #selector(stopAndResetTimer), keyEquivalent: "R")
+        let resetItem = NSMenuItem(title: "Stop/Reset Timer", action: #selector(stopAndResetTimer), keyEquivalent: "")
         menu.addItem(resetItem)
         
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate), keyEquivalent: "Q"))
+        menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate), keyEquivalent: ""))
 
         statusItem.menu = menu
     }

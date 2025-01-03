@@ -57,8 +57,8 @@ class TimerOverlayController: NSWindowController {
         progressWidthConstraint = progressBar.widthAnchor.constraint(equalToConstant: 0)
         NSLayoutConstraint.activate([
             progressBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            progressBar.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 2),
-            progressBar.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2),
+            progressBar.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+            progressBar.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
             progressWidthConstraint
         ])
     }
