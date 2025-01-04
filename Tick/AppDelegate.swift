@@ -11,7 +11,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var timerManager = TimerManager()
     var overlayController: TimerOverlayController!
-
+    
+    private var lastColor: NSColor = .systemGreen
+    private var lastPlayedColor: NSColor?
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
         setupMenu()
@@ -19,8 +22,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         overlayController = TimerOverlayController()
         overlayController.showWindow(nil)
-    }
 
+        if UserDefaults.standard.object(forKey: "SoundsEnabled") == nil {
+            UserDefaults.standard.set(true, forKey: "SoundsEnabled")
+        }
+    }
 
     func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -38,6 +44,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let timerItem = NSMenuItem(title: "Time Remaining: 00:00", action: nil, keyEquivalent: "")
         timerItem.isEnabled = false
         menu.addItem(timerItem)
+
+        menu.addItem(NSMenuItem.separator())
 
         let quickStartMenu = NSMenuItem(title: "Quick Start", action: nil, keyEquivalent: "")
         let quickStartSubmenu = NSMenu()
@@ -57,26 +65,63 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(quickStartMenu)
 
         menu.addItem(NSMenuItem(title: "Set Timer Duration...", action: #selector(promptSetCustomDuration), keyEquivalent: ""))
-        
         menu.addItem(NSMenuItem.separator())
-        let resetItem = NSMenuItem(title: "Stop/Reset Timer", action: #selector(stopAndResetTimer), keyEquivalent: "")
+        
+        let resetItem = NSMenuItem(title: "Stop Timer", action: #selector(stopAndResetTimer), keyEquivalent: "")
         menu.addItem(resetItem)
         
+        menu.addItem(NSMenuItem.separator())
+        let preferencesMenu = NSMenu()
+        let soundToggleItem = NSMenuItem(
+            title: soundPreferenceToggleTitle(),
+            action: #selector(toggleSoundPreference),
+            keyEquivalent: ""
+        )
+        soundToggleItem.target = self
+        preferencesMenu.addItem(soundToggleItem)
+
+        let preferencesItem = NSMenuItem(title: "Preferences", action: nil, keyEquivalent: "")
+        preferencesItem.submenu = preferencesMenu
+        menu.addItem(preferencesItem)
+
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate), keyEquivalent: ""))
 
         statusItem.menu = menu
     }
+    
+    private func soundPreferenceToggleTitle() -> String {
+        let isEnabled = UserDefaults.standard.bool(forKey: "SoundsEnabled")
+        return isEnabled ? "Disable sound transitions" : "Enable sound transitions"
+    }
+
+    @objc func toggleSoundPreference(_ sender: NSMenuItem) {
+        let currentValue = UserDefaults.standard.bool(forKey: "SoundsEnabled")
+        UserDefaults.standard.set(!currentValue, forKey: "SoundsEnabled")
+
+        sender.title = soundPreferenceToggleTitle()
+    }
 
     func setupTimerUpdateHandler() {
         timerManager.onTimerUpdate = { [weak self] progress in
-            self?.updateStatusBarTitle(progress: progress)
-            self?.updateMenuCountdown()
-            self?.overlayController.update(progress: progress, color: self?.getProgressColor(for: progress) ?? .systemBlue)
+            guard let self = self else { return }
+
+            let newColor = self.getProgressColor(for: progress)
+            
+            self.updateStatusBarTitle(progress: progress)
+            self.updateMenuCountdown()
+            self.overlayController.update(progress: progress, color: newColor)
+            
+            if self.lastPlayedColor != newColor {
+                self.playTransitionSound(for: newColor)
+                self.lastPlayedColor = newColor
+            }
         }
+
         timerManager.onTimerComplete = { [weak self] in
             self?.resetStatusBarIcon()
             self?.overlayController.window?.orderOut(nil)
+            self?.lastPlayedColor = nil
         }
     }
 
@@ -88,6 +133,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func startTimer(with duration: TimeInterval) {
         timerManager.startTimer(duration: duration)
         overlayController.window?.orderFront(nil)
+
+        if let button = statusItem.button {
+            button.image = nil
+            button.title = "🟢"
+        }
+
+        let initialProgress = 1.0
+        let initialColor = getProgressColor(for: initialProgress)
+        overlayController.update(progress: initialProgress, color: initialColor)
+
+        playTransitionSound(for: initialColor)
+        lastPlayedColor = initialColor
     }
 
     @objc func promptSetCustomDuration() {
@@ -96,8 +153,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                             backing: .buffered,
                             defer: false)
         panel.title = "Set Timer Duration"
-
-        panel.delegate = self
 
         let descriptionLabel = NSTextField(labelWithString: "Set the duration for the timer:")
         descriptionLabel.frame = NSRect(x: 50, y: 150, width: 200, height: 20)
@@ -127,7 +182,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         timePicker.tag = 1001
-
         panel.isFloatingPanel = true
 
         NSApp.runModal(for: panel)
@@ -167,27 +221,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         timerManager.stopTimer()
 
         resetStatusBarIcon()
-        overlayController.update(progress: 0.0, color: .systemBlue) // Reset progress to 0
+        overlayController.update(progress: 0.0, color: .systemBlue)
         overlayController.window?.orderOut(nil)
+        lastPlayedColor = nil
     }
 
     func updateStatusBarTitle(progress: Double) {
-        if let button = statusItem.button {
-            if progress > 0.5 {
-                button.title = "🟢"
-            } else if progress > 0.2 {
-                button.title = "🟡"
-            } else {
-                button.title = "🔴"
-            }
-            button.image = nil
+        guard let button = statusItem.button else { return }
 
-            let minutes = Int(timerManager.remainingTime) / 60
-            let seconds = Int(timerManager.remainingTime) % 60
-            button.toolTip = String(format: "Time Remaining: %02d:%02d", minutes, seconds)
+        if progress > 0.5 {
+            button.title = "🟢"
+        } else if progress > 0.2 {
+            button.title = "🟡"
+        } else {
+            button.title = "🔴"
         }
-    }
 
+        button.image = nil
+
+        let minutes = Int(timerManager.remainingTime) / 60
+        let seconds = Int(timerManager.remainingTime) % 60
+        button.toolTip = String(format: "Time Remaining: %02d:%02d", minutes, seconds)
+    }
 
     func updateMenuCountdown() {
         if let menu = statusItem.menu, let timerItem = menu.items.first {
@@ -211,13 +266,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func getProgressColor(for progress: Double) -> NSColor {
-        if progress > 0.5 {
+        let greenThreshold: Double = 0.5
+        let yellowThreshold: Double = 0.2
+
+        if progress > greenThreshold {
             return .systemGreen
-        } else if progress > 0.2 {
+        } else if progress > yellowThreshold {
             return .systemYellow
         } else {
             return .systemRed
         }
+    }
+    
+    private func playTransitionSound(for color: NSColor) {
+        guard UserDefaults.standard.bool(forKey: "SoundsEnabled") else {
+            print("Sounds are disabled. No sound will be played.")
+            return
+        }
+
+        let soundName: String
+        switch color {
+        case .systemGreen:
+            soundName = "Submarine"
+        case .systemYellow:
+            soundName = "Ping"
+        case .systemRed:
+            soundName = "Basso"
+        default:
+            return
+        }
+
+        guard let sound = NSSound(named: soundName) else {
+            print("Sound \(soundName) not found! Defaulting to system beep.")
+            NSSound.beep()
+            return
+        }
+
+        sound.stop()
+        sound.play()
     }
 }
 

@@ -73,7 +73,23 @@ class TimerOverlayController: NSWindowController {
             self.window?.contentView?.layoutSubtreeIfNeeded()
         }
 
+        if progressBar.layer?.backgroundColor != color.withAlphaComponent(0.4).cgColor {
+            let flashAnimation = CABasicAnimation(keyPath: "opacity")
+            flashAnimation.fromValue = 1.0
+            flashAnimation.toValue = 0.3
+            flashAnimation.duration = 0.2
+            flashAnimation.autoreverses = true
+            flashAnimation.repeatCount = 1
+            progressBar.layer?.add(flashAnimation, forKey: "flash")
+        }
+
         progressBar.layer?.backgroundColor = color.withAlphaComponent(0.4).cgColor
     }
+    
+    func currentProgressBarColor() -> NSColor? {
+        guard let cgColor = progressBar.layer?.backgroundColor else {
+            return nil
+        }
+        return NSColor(cgColor: cgColor)
+    }
 }
-
