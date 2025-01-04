@@ -23,9 +23,12 @@ class TimerManager: ObservableObject {
         totalTime = duration
         remainingTime = duration
 
-        timer?.invalidate() // Stop any existing timer
+        timer?.invalidate()
+        onTimerUpdate?(1.0)
+
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
     }
+
 
     func stopTimer() {
         timer?.invalidate()

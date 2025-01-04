@@ -11,13 +11,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var timerManager = TimerManager()
     var overlayController: TimerOverlayController!
+    var menuManager: MenuManager!
     
     private var lastColor: NSColor = .systemGreen
     private var lastPlayedColor: NSColor?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
-        setupMenu()
+        
+        menuManager = MenuManager(statusItem: statusItem, appDelegate: self)
+        menuManager.setupMenu()
+        
         setupTimerUpdateHandler()
 
         overlayController = TimerOverlayController()
@@ -38,59 +42,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    func setupMenu() {
-        let menu = NSMenu()
-
-        let timerItem = NSMenuItem(title: "Time Remaining: 00:00", action: nil, keyEquivalent: "")
-        timerItem.isEnabled = false
-        menu.addItem(timerItem)
-
-        menu.addItem(NSMenuItem.separator())
-
-        let quickStartMenu = NSMenuItem(title: "Quick Start", action: nil, keyEquivalent: "")
-        let quickStartSubmenu = NSMenu()
-
-        let quickDurations = [1, 5, 10]
-        quickDurations.forEach { minutes in
-            let item = NSMenuItem(
-                title: "\(minutes) min",
-                action: #selector(startQuickTimer),
-                keyEquivalent: ""
-            )
-            item.representedObject = minutes * 60
-            quickStartSubmenu.addItem(item)
-        }
-
-        quickStartMenu.submenu = quickStartSubmenu
-        menu.addItem(quickStartMenu)
-
-        menu.addItem(NSMenuItem(title: "Set Timer Duration...", action: #selector(promptSetCustomDuration), keyEquivalent: ""))
-        menu.addItem(NSMenuItem.separator())
-        
-        let resetItem = NSMenuItem(title: "Stop Timer", action: #selector(stopAndResetTimer), keyEquivalent: "")
-        menu.addItem(resetItem)
-        
-        menu.addItem(NSMenuItem.separator())
-        let preferencesMenu = NSMenu()
-        let soundToggleItem = NSMenuItem(
-            title: soundPreferenceToggleTitle(),
-            action: #selector(toggleSoundPreference),
-            keyEquivalent: ""
-        )
-        soundToggleItem.target = self
-        preferencesMenu.addItem(soundToggleItem)
-
-        let preferencesItem = NSMenuItem(title: "Preferences", action: nil, keyEquivalent: "")
-        preferencesItem.submenu = preferencesMenu
-        menu.addItem(preferencesItem)
-
-        menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate), keyEquivalent: ""))
-
-        statusItem.menu = menu
-    }
-    
-    private func soundPreferenceToggleTitle() -> String {
+    func soundPreferenceToggleTitle() -> String {
         let isEnabled = UserDefaults.standard.bool(forKey: "SoundsEnabled")
         return isEnabled ? "Disable sound transitions" : "Enable sound transitions"
     }
@@ -286,31 +238,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     private func playTransitionSound(for color: NSColor) {
-        guard UserDefaults.standard.bool(forKey: "SoundsEnabled") else {
-            print("Sounds are disabled. No sound will be played.")
-            return
-        }
-
-        let soundName: String
-        switch color {
-        case .systemGreen:
-            soundName = "Submarine"
-        case .systemYellow:
-            soundName = "Ping"
-        case .systemRed:
-            soundName = "Basso"
-        default:
-            return
-        }
-
-        guard let sound = NSSound(named: soundName) else {
-            print("Sound \(soundName) not found! Defaulting to system beep.")
-            NSSound.beep()
-            return
-        }
-
-        sound.stop()
-        sound.play()
+        SoundManager.shared.playTransitionSound(for: color)
     }
 }
 

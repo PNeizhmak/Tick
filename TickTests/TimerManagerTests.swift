@@ -27,6 +27,19 @@ class TimerManagerTests: XCTestCase {
         
         XCTAssertEqual(timerManager.totalTime, duration)
         XCTAssertEqual(timerManager.remainingTime, duration)
+        XCTAssertTrue(timerManager.isTimerRunning)
+    }
+
+    func testResetOnNewTimerStart() {
+        let firstDuration: TimeInterval = 60
+        let secondDuration: TimeInterval = 30
+
+        timerManager.startTimer(duration: firstDuration)
+        XCTAssertTrue(timerManager.isTimerRunning)
+
+        timerManager.startTimer(duration: secondDuration) // Start a new timer on top of the existing one
+        XCTAssertEqual(timerManager.totalTime, secondDuration)
+        XCTAssertEqual(timerManager.remainingTime, secondDuration)
     }
 
     func testTimerProgress() {
@@ -57,7 +70,6 @@ class TimerManagerTests: XCTestCase {
         XCTAssertEqual(progressUpdates.count, Int(duration) + 1, accuracy: 1)
     }
 
-
     func testStopTimer() {
         let duration: TimeInterval = 60
         timerManager.startTimer(duration: duration)
@@ -65,6 +77,7 @@ class TimerManagerTests: XCTestCase {
 
         XCTAssertEqual(timerManager.remainingTime, 0)
         XCTAssertEqual(timerManager.totalTime, 0)
+        XCTAssertFalse(timerManager.isTimerRunning)
     }
 
     func testTimerCompletion() {
@@ -79,6 +92,7 @@ class TimerManagerTests: XCTestCase {
         wait(for: [expectation], timeout: duration + 2)
 
         XCTAssertEqual(timerManager.remainingTime, 0)
+        XCTAssertFalse(timerManager.isTimerRunning)
     }
 
     func testProgressCallbackFrequency() {
@@ -98,5 +112,13 @@ class TimerManagerTests: XCTestCase {
         wait(for: [expectation], timeout: duration + 2)
 
         XCTAssertGreaterThanOrEqual(progressUpdateCount, Int(duration))
+    }
+
+    func testSoundPreferenceBehavior() {
+        UserDefaults.standard.set(true, forKey: "SoundsEnabled")
+        XCTAssertTrue(UserDefaults.standard.bool(forKey: "SoundsEnabled"))
+
+        UserDefaults.standard.set(false, forKey: "SoundsEnabled")
+        XCTAssertFalse(UserDefaults.standard.bool(forKey: "SoundsEnabled"))
     }
 }
