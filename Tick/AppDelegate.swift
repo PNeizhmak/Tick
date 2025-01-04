@@ -131,6 +131,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func startTimer(with duration: TimeInterval) {
+        if timerManager.isTimerRunning {
+            timerManager.stopTimer()
+            overlayController.update(progress: 0.0, color: .systemBlue)
+            overlayController.window?.orderOut(nil)
+        }
+
         timerManager.startTimer(duration: duration)
         overlayController.window?.orderFront(nil)
 

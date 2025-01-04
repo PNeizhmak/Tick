@@ -14,7 +14,11 @@ class TimerManager: ObservableObject {
 
     var onTimerUpdate: ((Double) -> Void)?
     var onTimerComplete: (() -> Void)?
-
+    
+    var isTimerRunning: Bool {
+        return remainingTime > 0 && timer != nil
+    }
+    
     func startTimer(duration: TimeInterval) {
         totalTime = duration
         remainingTime = duration
