@@ -153,7 +153,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                             backing: .buffered,
                             defer: false)
         panel.title = "Set Timer Duration"
-
+        panel.delegate = self
+        
         let descriptionLabel = NSTextField(labelWithString: "Set the duration for the timer:")
         descriptionLabel.frame = NSRect(x: 50, y: 150, width: 200, height: 20)
         descriptionLabel.alignment = .center
