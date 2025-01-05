@@ -40,6 +40,11 @@
 			path = TickTests;
 			sourceTree = "<group>";
 		};
+		F378A63D2D2AF1CF002CBC62 /* Build */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Build;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +75,7 @@
 		F31D2AE92D2330C900DF129E = {
 			isa = PBXGroup;
 			children = (
+				F378A63D2D2AF1CF002CBC62 /* Build */,
 				F31D2AF42D2330C900DF129E /* Tick */,
 				F31D2B062D2330CB00DF129E /* TickTests */,
 				F31D2AF32D2330C900DF129E /* Products */,
@@ -103,6 +109,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				F31D2AF42D2330C900DF129E /* Tick */,
+				F378A63D2D2AF1CF002CBC62 /* Build */,
 			);
 			name = Tick;
 			packageProductDependencies = (
