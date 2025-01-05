@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F378A6472D2B0BED002CBC62 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F378A6462D2B0BED002CBC62 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F31D2B042D2330CB00DF129E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,9 +28,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F31D2AF22D2330C900DF129E /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tick.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F31D2B032D2330CB00DF129E /* TickTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TickTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F31D2B0D2D2330CB00DF129E /* TickUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TickUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F31D2AF22D2330C900DF129E /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Tick.app; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app; sourceTree = "<absolute>"; };
+		F31D2B032D2330CB00DF129E /* TickTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickTests.xctest; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app/Contents/PlugIns/TickTests.xctest; sourceTree = "<absolute>"; };
+		F31D2B0D2D2330CB00DF129E /* TickUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickUITests.xctest; path = "/Users/paveln/Work/Repo/Tick/build/Debug/TickUITests-Runner.app/Contents/PlugIns/TickUITests.xctest"; sourceTree = "<absolute>"; };
+		F378A6462D2B0BED002CBC62 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -78,18 +83,8 @@
 				F378A63D2D2AF1CF002CBC62 /* Build */,
 				F31D2AF42D2330C900DF129E /* Tick */,
 				F31D2B062D2330CB00DF129E /* TickTests */,
-				F31D2AF32D2330C900DF129E /* Products */,
+				F378A6462D2B0BED002CBC62 /* README.md */,
 			);
-			sourceTree = "<group>";
-		};
-		F31D2AF32D2330C900DF129E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F31D2AF22D2330C900DF129E /* Tick.app */,
-				F31D2B032D2330CB00DF129E /* TickTests.xctest */,
-				F31D2B0D2D2330CB00DF129E /* TickUITests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,7 +191,7 @@
 			mainGroup = F31D2AE92D2330C900DF129E;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = F31D2AF32D2330C900DF129E /* Products */;
+			productRefGroup = F31D2AE92D2330C900DF129E;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -212,6 +207,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F378A6472D2B0BED002CBC62 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
