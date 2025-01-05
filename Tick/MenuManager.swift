@@ -28,7 +28,7 @@ class MenuManager {
         let quickStartMenu = NSMenuItem(title: "Quick Start", action: nil, keyEquivalent: "")
         let quickStartSubmenu = NSMenu()
 
-        let quickDurations = [1, 5, 10]
+        let quickDurations = [1, 5, 10, 30]
         quickDurations.forEach { minutes in
             let item = NSMenuItem(
                 title: "\(minutes) min",

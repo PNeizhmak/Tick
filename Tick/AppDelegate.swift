@@ -121,7 +121,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let timePicker = NSDatePicker()
         timePicker.datePickerMode = .single
         timePicker.datePickerElements = [.hourMinuteSecond]
-        timePicker.dateValue = Calendar.current.date(from: DateComponents(hour: 0, minute: 5)) ?? Date()
+        timePicker.dateValue = Calendar.current.date(from: DateComponents(hour: 0, minute: 20)) ?? Date()
         timePicker.frame = NSRect(x: 50, y: 100, width: 200, height: 30)
 
         let hintLabel = NSTextField(labelWithString: "Hours : Minutes : Seconds")
