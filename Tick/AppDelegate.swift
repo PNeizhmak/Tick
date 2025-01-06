@@ -30,6 +30,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if UserDefaults.standard.object(forKey: "SoundsEnabled") == nil {
             UserDefaults.standard.set(true, forKey: "SoundsEnabled")
         }
+        
+        checkForUpdatesAutomatically()
+    }
+    
+    func checkForUpdatesAutomatically() {
+        UpdateManager.shared.checkForUpdates { isUpdateAvailable, latestVersion, downloadURL in
+            DispatchQueue.main.async {
+                if isUpdateAvailable, let latestVersion = latestVersion, let downloadURL = downloadURL {
+                    self.promptUpdate(latestVersion: latestVersion, downloadURL: downloadURL)
+                }
+            }
+        }
+    }
+    
+    func promptUpdate(latestVersion: String, downloadURL: String) {
+        let alert = NSAlert()
+        alert.messageText = "Update Available"
+        alert.informativeText = "A newer version of Tick (\(latestVersion)) is available. Would you like to download it?"
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Download")
+        alert.addButton(withTitle: "Ignore This Update")
+        alert.addButton(withTitle: "Cancel")
+
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            NSWorkspace.shared.open(URL(string: downloadURL)!)
+        } else if response == .alertSecondButtonReturn {
+            UpdateManager.shared.ignoreUpdate(version: latestVersion)
+        }
     }
 
     func setupStatusItem() {

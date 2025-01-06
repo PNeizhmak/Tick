@@ -4,4 +4,4 @@ Tick is a minimal macOS timer app designed for simplicity and functionality. It 
 
 <img src="Build/demo.gif" alt="App Demo" />
 
-[![Download Tick macOS app](https://img.shields.io/badge/Download-macOS_App-blue?style=flat-square)](/Build/Tick%20App.dmg)
+[![Download Tick macOS app](https://img.shields.io/badge/Download-macOS_App-blue?style=flat-square)](https://github.com/PNeizhmak/Tick/raw/refs/heads/main/Build/Tick%20App.dmg)
