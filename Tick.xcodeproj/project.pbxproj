@@ -31,7 +31,7 @@
 		F31D2B032D2330CB00DF129E /* TickTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickTests.xctest; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app/Contents/PlugIns/TickTests.xctest; sourceTree = "<absolute>"; };
 		F31D2B0D2D2330CB00DF129E /* TickUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickUITests.xctest; path = "/Users/paveln/Work/Repo/Tick/build/Debug/TickUITests-Runner.app/Contents/PlugIns/TickUITests.xctest"; sourceTree = "<absolute>"; };
 		F378A6462D2B0BED002CBC62 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		F378A6562D2BFEFB002CBC62 /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Tick.app; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app; sourceTree = "<absolute>"; };
+		F378A65C2D2C725B002CBC62 /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Tick.app; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -110,7 +110,7 @@
 			packageProductDependencies = (
 			);
 			productName = Tick;
-			productReference = F378A6562D2BFEFB002CBC62 /* Tick.app */;
+			productReference = F378A65C2D2C725B002CBC62 /* Tick.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F31D2B022D2330CB00DF129E /* TickTests */ = {
@@ -389,10 +389,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Tick/Tick.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Tick/Preview Content\"";
+				DEVELOPMENT_TEAM = 2HVG64P2S8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "";
@@ -406,6 +408,7 @@
 				MARKETING_VERSION = 0.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.project.Tick;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -417,10 +420,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Tick/Tick.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Tick/Preview Content\"";
+				DEVELOPMENT_TEAM = 2HVG64P2S8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "";
@@ -434,6 +439,7 @@
 				MARKETING_VERSION = 0.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.project.Tick;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
