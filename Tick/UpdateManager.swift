@@ -14,10 +14,21 @@ class UpdateManager {
     private init() {}
 
     func checkForUpdates(completion: @escaping (Bool, String?, String?) -> Void) {
-        guard let url = URL(string: "https://github.com/PNeizhmak/Tick/blob/main/Build/version.json") else { return }
+        guard let url = URL(string: "https://raw.githubusercontent.com/PNeizhmak/Tick/refs/heads/main/Build/version.json") else {
+            print("Invalid URL")
+            completion(false, nil, nil)
+            return
+        }
 
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else {
+            if let error = error {
+                print("Failed to fetch update info: \(error.localizedDescription)")
+                completion(false, nil, nil)
+                return
+            }
+
+            guard let data = data else {
+                print("No data received from server")
                 completion(false, nil, nil)
                 return
             }
@@ -36,8 +47,12 @@ class UpdateManager {
                     } else {
                         completion(false, nil, nil)
                     }
+                } else {
+                    print("Invalid JSON format")
+                    completion(false, nil, nil)
                 }
             } catch {
+                print("Failed to parse JSON: \(error.localizedDescription)")
                 completion(false, nil, nil)
             }
         }

@@ -31,25 +31,12 @@
 		F31D2B032D2330CB00DF129E /* TickTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickTests.xctest; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app/Contents/PlugIns/TickTests.xctest; sourceTree = "<absolute>"; };
 		F31D2B0D2D2330CB00DF129E /* TickUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickUITests.xctest; path = "/Users/paveln/Work/Repo/Tick/build/Debug/TickUITests-Runner.app/Contents/PlugIns/TickUITests.xctest"; sourceTree = "<absolute>"; };
 		F378A6462D2B0BED002CBC62 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		F378A64A2D2BE8DC002CBC62 /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Tick.app; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app; sourceTree = "<absolute>"; };
+		F378A6562D2BFEFB002CBC62 /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tick.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F378A64C2D2BE8E7002CBC62 /* Exceptions for "Tick" folder in "Tick" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = F31D2AF12D2330C900DF129E /* Tick */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F31D2AF42D2330C900DF129E /* Tick */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				F378A64C2D2BE8E7002CBC62 /* Exceptions for "Tick" folder in "Tick" target */,
-			);
 			path = Tick;
 			sourceTree = "<group>";
 		};
@@ -97,6 +84,7 @@
 				F31D2AF42D2330C900DF129E /* Tick */,
 				F31D2B062D2330CB00DF129E /* TickTests */,
 				F378A6462D2B0BED002CBC62 /* README.md */,
+				F378A6562D2BFEFB002CBC62 /* Tick.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -123,7 +111,7 @@
 			packageProductDependencies = (
 			);
 			productName = Tick;
-			productReference = F378A64A2D2BE8DC002CBC62 /* Tick.app */;
+			productReference = F378A6562D2BFEFB002CBC62 /* Tick.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F31D2B022D2330CB00DF129E /* TickTests */ = {
@@ -408,14 +396,15 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Tick/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Tick/Info.plist;
+				INFOPLIST_FILE = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.project.Tick;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -435,14 +424,15 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Tick/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Tick/Info.plist;
+				INFOPLIST_FILE = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.project.Tick;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
