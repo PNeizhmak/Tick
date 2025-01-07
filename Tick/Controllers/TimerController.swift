@@ -38,6 +38,7 @@ class TimerController {
 
         timerManager.onTimerComplete = { [weak self] in
             self?.resetTimerUI()
+            self?.soundManager.playTimerStoppedSound()
         }
     }
 
@@ -60,6 +61,7 @@ class TimerController {
     func stopTimer() {
         timerManager.stopTimer()
         resetTimerUI()
+        soundManager.playTimerStoppedSound()
     }
 
     private func resetTimerUI() {

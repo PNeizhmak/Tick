@@ -30,13 +30,24 @@ class SoundManager {
             return
         }
 
-        guard let sound = NSSound(named: soundName) else {
-            print("Sound \(soundName) not found! Defaulting to system beep.")
-            NSSound.beep()
+        playSound(named: soundName)
+    }
+
+    func playTimerStoppedSound() {
+        guard UserDefaults.standard.bool(forKey: "SoundsEnabled") else {
+            print("Sounds are disabled. No sound will be played.")
             return
         }
 
-        sound.stop()
-        sound.play()
+        playSound(named: "Pop")
+    }
+
+    private func playSound(named soundName: String) {
+        if let sound = NSSound(named: soundName) {
+            print("Playing sound: \(soundName)")
+            sound.play()
+        } else {
+            print("Warning: Sound \(soundName) not found!")
+        }
     }
 }
