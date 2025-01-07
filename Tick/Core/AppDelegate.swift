@@ -12,28 +12,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var timerManager = TimerManager()
     var overlayController: TimerOverlayController!
     var menuManager: MenuManager!
-    
-    private var lastColor: NSColor = .systemGreen
-    private var lastPlayedColor: NSColor?
-    
+    var timerController: TimerController!
+    var statusBarManager: StatusBarManager!
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
-        
+
         menuManager = MenuManager(statusItem: statusItem, appDelegate: self)
         menuManager.setupMenu()
-        
-        setupTimerUpdateHandler()
 
         overlayController = TimerOverlayController()
-        overlayController.showWindow(nil)
+        timerController = TimerController(timerManager: timerManager, overlayController: overlayController)
+        statusBarManager = StatusBarManager(statusItem: statusItem, timerManager: timerManager)
 
         if UserDefaults.standard.object(forKey: "SoundsEnabled") == nil {
             UserDefaults.standard.set(true, forKey: "SoundsEnabled")
         }
-        
+
         checkForUpdatesAutomatically()
     }
-    
+
+    func setupStatusItem() {
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        if let button = statusItem.button {
+            button.image = NSImage(named: "icon-timer")
+            button.image?.isTemplate = true
+            button.toolTip = "Time Remaining: 00:00"
+        }
+    }
+
     func checkForUpdatesAutomatically() {
         UpdateManager.shared.checkForUpdates { isUpdateAvailable, latestVersion, downloadURL in
             DispatchQueue.main.async {
@@ -43,7 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
-    
+
     func promptUpdate(latestVersion: String, downloadURL: String) {
         let alert = NSAlert()
         alert.messageText = "Update Available"
@@ -55,83 +62,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let response = alert.runModal()
         if response == .alertFirstButtonReturn {
-            NSWorkspace.shared.open(URL(string: downloadURL)!)
+            if let url = URL(string: downloadURL) {
+                NSWorkspace.shared.open(url)
+            }
         } else if response == .alertSecondButtonReturn {
             UpdateManager.shared.ignoreUpdate(version: latestVersion)
         }
     }
 
-    func setupStatusItem() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-
-        if let button = statusItem.button {
-            button.image = NSImage(named: "icon-timer")
-            button.image?.isTemplate = true
-            button.toolTip = "Time Remaining: 00:00"
-        }
-    }
-    
-    func soundPreferenceToggleTitle() -> String {
-        let isEnabled = UserDefaults.standard.bool(forKey: "SoundsEnabled")
-        return isEnabled ? "Disable sound transitions" : "Enable sound transitions"
-    }
-
-    @objc func toggleSoundPreference(_ sender: NSMenuItem) {
-        let currentValue = UserDefaults.standard.bool(forKey: "SoundsEnabled")
-        UserDefaults.standard.set(!currentValue, forKey: "SoundsEnabled")
-
-        sender.title = soundPreferenceToggleTitle()
-    }
-
-    func setupTimerUpdateHandler() {
-        timerManager.onTimerUpdate = { [weak self] progress in
-            guard let self = self else { return }
-
-            let newColor = self.getProgressColor(for: progress)
-            
-            self.updateStatusBarTitle(progress: progress)
-            self.updateMenuCountdown()
-            self.overlayController.update(progress: progress, color: newColor)
-            
-            if self.lastPlayedColor != newColor {
-                self.playTransitionSound(for: newColor)
-                self.lastPlayedColor = newColor
-            }
-        }
-
-        timerManager.onTimerComplete = { [weak self] in
-            self?.resetStatusBarIcon()
-            self?.overlayController.window?.orderOut(nil)
-            self?.lastPlayedColor = nil
-        }
-    }
-
     @objc func startQuickTimer(_ sender: NSMenuItem) {
         guard let duration = sender.representedObject as? Int else { return }
-        startTimer(with: TimeInterval(duration))
-    }
-
-    func startTimer(with duration: TimeInterval) {
-        if timerManager.isTimerRunning {
-            timerManager.stopTimer()
-            overlayController.update(progress: 0.0, color: .systemBlue)
-            overlayController.window?.orderOut(nil)
-        }
-
-        timerManager.startTimer(duration: duration)
-        overlayController.window?.orderFront(nil)
-
-        if let button = statusItem.button {
-            button.image = nil
-            button.title = "🟢"
-        }
-
-        let initialProgress = 1.0
-        let initialColor = getProgressColor(for: initialProgress)
-        overlayController.update(progress: initialProgress, color: initialColor)
-
-        playTransitionSound(for: initialColor)
-        lastPlayedColor = initialColor
+        timerController.startTimer(duration: TimeInterval(duration))
     }
 
     @objc func promptSetCustomDuration() {
@@ -190,7 +131,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        startTimer(with: TimeInterval(totalSeconds))
+        timerController.startTimer(duration: TimeInterval(totalSeconds))
 
         panel.close()
         NSApp.stopModal()
@@ -206,73 +147,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func stopAndResetTimer() {
-        timerManager.stopTimer()
-
-        resetStatusBarIcon()
-        overlayController.update(progress: 0.0, color: .systemBlue)
-        overlayController.window?.orderOut(nil)
-        lastPlayedColor = nil
-    }
-
-    func updateStatusBarTitle(progress: Double) {
-        guard let button = statusItem.button else { return }
-
-        if progress > 0.5 {
-            button.title = "🟢"
-        } else if progress > 0.2 {
-            button.title = "🟡"
-        } else {
-            button.title = "🔴"
-        }
-
-        button.image = nil
-
-        let minutes = Int(timerManager.remainingTime) / 60
-        let seconds = Int(timerManager.remainingTime) % 60
-        button.toolTip = String(format: "Time Remaining: %02d:%02d", minutes, seconds)
-    }
-
-    func updateMenuCountdown() {
-        if let menu = statusItem.menu, let timerItem = menu.items.first {
-            let minutes = Int(timerManager.remainingTime) / 60
-            let seconds = Int(timerManager.remainingTime) % 60
-            timerItem.title = String(format: "Time Remaining: %02d:%02d", minutes, seconds)
-        }
-    }
-
-    func resetStatusBarIcon() {
-        if let button = statusItem.button {
-            button.title = ""
-            button.image = NSImage(named: "icon-timer")
-            button.image?.isTemplate = true
-            button.toolTip = "Time Remaining: 00:00"
-        }
-
-        if let menu = statusItem.menu, let timerItem = menu.items.first {
-            timerItem.title = "Time Remaining: 00:00"
-        }
-    }
-
-    private func getProgressColor(for progress: Double) -> NSColor {
-        let greenThreshold: Double = 0.5
-        let yellowThreshold: Double = 0.2
-
-        if progress > greenThreshold {
-            return .systemGreen
-        } else if progress > yellowThreshold {
-            return .systemYellow
-        } else {
-            return .systemRed
-        }
-    }
-    
-    private func playTransitionSound(for color: NSColor) {
-        SoundManager.shared.playTransitionSound(for: color)
+        timerController.stopTimer()
+        statusBarManager.resetStatusBarIcon()
     }
 }
 
 extension AppDelegate: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         NSApp.stopModal()
+    }
+}
+
+extension AppDelegate {
+    func soundPreferenceToggleTitle() -> String {
+        return PreferencesManager.shared.soundPreferenceToggleTitle()
+    }
+
+    @objc func toggleSoundPreference(_ sender: NSMenuItem) {
+        PreferencesManager.shared.toggleSoundPreference()
+        sender.title = PreferencesManager.shared.soundPreferenceToggleTitle()
     }
 }

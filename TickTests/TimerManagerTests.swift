@@ -113,12 +113,4 @@ class TimerManagerTests: XCTestCase {
 
         XCTAssertGreaterThanOrEqual(progressUpdateCount, Int(duration))
     }
-
-    func testSoundPreferenceBehavior() {
-        UserDefaults.standard.set(true, forKey: "SoundsEnabled")
-        XCTAssertTrue(UserDefaults.standard.bool(forKey: "SoundsEnabled"))
-
-        UserDefaults.standard.set(false, forKey: "SoundsEnabled")
-        XCTAssertFalse(UserDefaults.standard.bool(forKey: "SoundsEnabled"))
-    }
 }

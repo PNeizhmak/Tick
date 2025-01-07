@@ -7,17 +7,17 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FAB81293-D4B9-419B-9D92-7B340C351A83"
-            shouldBeEnabled = "No"
+            uuid = "4DB54447-5F03-4A9A-81F0-FE314BCEDCBC"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TickTests/TimerManagerTests.swift"
+            filePath = "Tick/SoundManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "11"
-            endingLineNumber = "11"
-            landmarkName = "TimerManagerTests"
-            landmarkType = "3">
+            startingLineNumber = "17"
+            endingLineNumber = "17"
+            landmarkName = "playTransitionSound(for:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
