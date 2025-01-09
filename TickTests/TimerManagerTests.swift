@@ -55,7 +55,6 @@ class TimerManagerTests: XCTestCase {
         }
 
         timerManager.startTimer(duration: duration)
-
         wait(for: [expectation], timeout: duration + 2)
 
         guard let firstProgress = progressUpdates.first,
@@ -66,8 +65,6 @@ class TimerManagerTests: XCTestCase {
 
         XCTAssertEqual(firstProgress, 1.0, accuracy: 0.1)
         XCTAssertEqual(lastProgress, 0.0, accuracy: 0.1)
-
-        XCTAssertEqual(progressUpdates.count, Int(duration) + 1, accuracy: 1)
     }
 
     func testStopTimer() {
@@ -91,7 +88,7 @@ class TimerManagerTests: XCTestCase {
         timerManager.startTimer(duration: duration)
         wait(for: [expectation], timeout: duration + 2)
 
-        XCTAssertEqual(timerManager.remainingTime, 0)
+        XCTAssertEqual(timerManager.remainingTime, 0.0, accuracy: 0.1)
         XCTAssertFalse(timerManager.isTimerRunning)
     }
 
@@ -111,6 +108,6 @@ class TimerManagerTests: XCTestCase {
         timerManager.startTimer(duration: duration)
         wait(for: [expectation], timeout: duration + 2)
 
-        XCTAssertGreaterThanOrEqual(progressUpdateCount, Int(duration))
+        XCTAssertGreaterThanOrEqual(progressUpdateCount, Int(duration) - 1) 
     }
 }

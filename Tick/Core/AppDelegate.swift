@@ -37,7 +37,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusItem.button {
             button.image = NSImage(named: "icon-timer")
             button.image?.isTemplate = true
-            button.toolTip = "Time Remaining: 00:00"
+            button.toolTip = "Tick App"
         }
     }
 
