@@ -63,7 +63,15 @@ class TimerController {
         resetTimerUI()
         soundManager.playTimerStoppedSound()
     }
-
+    
+    func addTimerUpdateHandler(_ handler: @escaping (Double) -> Void) {
+        let originalHandler = self.timerManager.onTimerUpdate
+        self.timerManager.onTimerUpdate = { progress in
+            originalHandler?(progress)
+            handler(progress)
+        }
+    }
+    
     private func resetTimerUI() {
         overlayController.update(progress: 0.0, color: .systemBlue)
         overlayController.window?.orderOut(nil)

@@ -10,7 +10,8 @@ import Cocoa
 class MenuManager {
     private let statusItem: NSStatusItem
     private let appDelegate: AppDelegate
-
+    private var timerItem: NSMenuItem!
+    
     init(statusItem: NSStatusItem, appDelegate: AppDelegate) {
         self.statusItem = statusItem
         self.appDelegate = appDelegate
@@ -19,7 +20,7 @@ class MenuManager {
     func setupMenu() {
         let menu = NSMenu()
 
-        let timerItem = NSMenuItem(title: "Time Remaining: 00:00", action: nil, keyEquivalent: "")
+        timerItem = NSMenuItem(title: "Time Remaining: 00:00", action: nil, keyEquivalent: "")
         timerItem.isEnabled = false
         menu.addItem(timerItem)
 
@@ -66,6 +67,12 @@ class MenuManager {
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate), keyEquivalent: ""))
 
         statusItem.menu = menu
+    }
+    
+    func updateTimerItem(with timeRemaining: TimeInterval) {
+        let minutes = Int(timeRemaining) / 60
+        let seconds = Int(timeRemaining) % 60
+        timerItem.title = String(format: "Time Remaining: %02d:%02d", minutes, seconds)
     }
     
     private func soundPreferenceToggleTitle() -> String {

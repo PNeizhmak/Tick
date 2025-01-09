@@ -24,7 +24,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         overlayController = TimerOverlayController()
         timerController = TimerController(timerManager: timerManager, overlayController: overlayController)
         statusBarManager = StatusBarManager(statusItem: statusItem, timerManager: timerManager)
-
+        
+        timerController.addTimerUpdateHandler { [weak self] progress in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.menuManager.updateTimerItem(with: self.timerManager.remainingTime)
+            }
+        }
+        
         if UserDefaults.standard.object(forKey: "SoundsEnabled") == nil {
             UserDefaults.standard.set(true, forKey: "SoundsEnabled")
         }
