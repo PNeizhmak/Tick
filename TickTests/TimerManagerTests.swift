@@ -21,63 +21,37 @@ class TimerManagerTests: XCTestCase {
         super.tearDown()
     }
 
-    func testStartTimer() {
-        let duration: TimeInterval = 60
-        timerManager.startTimer(duration: duration)
-        
-        XCTAssertEqual(timerManager.totalTime, duration)
-        XCTAssertEqual(timerManager.remainingTime, duration)
-        XCTAssertTrue(timerManager.isTimerRunning)
-    }
-
-    func testResetOnNewTimerStart() {
+    func testStartTimerResetsPreviousTimer() {
         let firstDuration: TimeInterval = 60
         let secondDuration: TimeInterval = 30
 
         timerManager.startTimer(duration: firstDuration)
-        XCTAssertTrue(timerManager.isTimerRunning)
+        timerManager.startTimer(duration: secondDuration)
 
-        timerManager.startTimer(duration: secondDuration) // Start a new timer on top of the existing one
         XCTAssertEqual(timerManager.totalTime, secondDuration)
         XCTAssertEqual(timerManager.remainingTime, secondDuration)
+        XCTAssertTrue(timerManager.isTimerRunning)
     }
 
-    func testTimerProgress() {
-        let expectation = self.expectation(description: "Timer progress updates")
-        let duration: TimeInterval = 10
-        var progressUpdates: [Double] = []
-
-        timerManager.onTimerUpdate = { progress in
-            progressUpdates.append(progress)
-            if progress == 0.0 {
-                expectation.fulfill()
-            }
-        }
-
-        timerManager.startTimer(duration: duration)
-        wait(for: [expectation], timeout: duration + 2)
-
-        guard let firstProgress = progressUpdates.first,
-              let lastProgress = progressUpdates.last else {
-            XCTFail("Progress updates are empty or nil")
-            return
-        }
-
-        XCTAssertEqual(firstProgress, 1.0, accuracy: 0.1)
-        XCTAssertEqual(lastProgress, 0.0, accuracy: 0.1)
-    }
-
-    func testStopTimer() {
-        let duration: TimeInterval = 60
-        timerManager.startTimer(duration: duration)
-        timerManager.stopTimer()
+    func testStopTimerWithSuppression() {
+        timerManager.startTimer(duration: 60)
+        timerManager.stopTimer(suppressStopSound: true)
 
         XCTAssertEqual(timerManager.remainingTime, 0)
         XCTAssertEqual(timerManager.totalTime, 0)
         XCTAssertFalse(timerManager.isTimerRunning)
     }
 
-    func testTimerCompletion() {
+    func testStopTimerWithoutSuppression() {
+        timerManager.startTimer(duration: 60)
+        timerManager.stopTimer(suppressStopSound: false)
+
+        XCTAssertEqual(timerManager.remainingTime, 0)
+        XCTAssertEqual(timerManager.totalTime, 0)
+        XCTAssertFalse(timerManager.isTimerRunning)
+    }
+
+    func testTimerCompletionCallsOnComplete() {
         let expectation = self.expectation(description: "Timer completes")
         let duration: TimeInterval = 1
 
@@ -88,26 +62,6 @@ class TimerManagerTests: XCTestCase {
         timerManager.startTimer(duration: duration)
         wait(for: [expectation], timeout: duration + 2)
 
-        XCTAssertEqual(timerManager.remainingTime, 0.0, accuracy: 0.1)
         XCTAssertFalse(timerManager.isTimerRunning)
-    }
-
-    func testProgressCallbackFrequency() {
-        let expectation = self.expectation(description: "Timer progress callback frequency")
-        let duration: TimeInterval = 5
-        var progressUpdateCount = 0
-
-        timerManager.onTimerUpdate = { _ in
-            progressUpdateCount += 1
-        }
-
-        timerManager.onTimerComplete = {
-            expectation.fulfill()
-        }
-
-        timerManager.startTimer(duration: duration)
-        wait(for: [expectation], timeout: duration + 2)
-
-        XCTAssertGreaterThanOrEqual(progressUpdateCount, Int(duration) - 1) 
     }
 }

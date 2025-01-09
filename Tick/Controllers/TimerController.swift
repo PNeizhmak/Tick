@@ -14,6 +14,7 @@ class TimerController {
     private let soundManager: SoundManager
 
     private var lastPlayedColor: NSColor?
+    private var isStoppingTimer = false
 
     init(timerManager: TimerManager, overlayController: TimerOverlayController, soundManager: SoundManager = .shared) {
         self.timerManager = timerManager
@@ -26,6 +27,10 @@ class TimerController {
     private func setupTimerHandlers() {
         timerManager.onTimerUpdate = { [weak self] progress in
             guard let self = self else { return }
+
+            if self.isStoppingTimer {
+                return
+            }
 
             let newColor = self.getProgressColor(for: progress)
             self.overlayController.update(progress: progress, color: newColor)
@@ -40,13 +45,36 @@ class TimerController {
             self?.resetTimerUI()
             self?.soundManager.playTimerStoppedSound()
         }
+
+        timerManager.onTimerStop = { [weak self] in
+            self?.soundManager.playTimerStoppedSound()
+        }
     }
 
     func startTimer(duration: TimeInterval) {
         if timerManager.isTimerRunning {
-            stopTimer()
+            SoundManager.shared.suppressStopSoundGlobally(true)
+            stopTimer(suppressStopSound: true)
+            SoundManager.shared.suppressStopSoundGlobally(false)
         }
+        
+        // small delay to separate stop and start logic
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            print("Starting new timer with duration: \(duration) seconds.")
+            self.timerManager.startTimer(duration: duration)
+            self.overlayController.window?.orderFront(nil)
 
+            let initialProgress = 1.0
+            let initialColor = self.getProgressColor(for: initialProgress)
+            self.overlayController.update(progress: initialProgress, color: initialColor)
+
+            print("Playing transition sound (Submarine).")
+            self.soundManager.playTransitionSound(for: initialColor)
+            self.lastPlayedColor = initialColor
+        }
+    }
+
+    private func startNewTimer(duration: TimeInterval) {
         timerManager.startTimer(duration: duration)
         overlayController.window?.orderFront(nil)
 
@@ -58,10 +86,16 @@ class TimerController {
         lastPlayedColor = initialColor
     }
 
-    func stopTimer() {
-        timerManager.stopTimer()
+    func stopTimer(suppressStopSound: Bool = false) {
+        isStoppingTimer = true
+        timerManager.stopTimer(suppressStopSound: suppressStopSound)
         resetTimerUI()
-        soundManager.playTimerStoppedSound()
+
+        if !suppressStopSound {
+            soundManager.playTimerStoppedSound()
+        }
+
+        isStoppingTimer = false
     }
     
     func addTimerUpdateHandler(_ handler: @escaping (Double) -> Void) {
@@ -71,7 +105,7 @@ class TimerController {
             handler(progress)
         }
     }
-    
+
     private func resetTimerUI() {
         overlayController.update(progress: 0.0, color: .systemBlue)
         overlayController.window?.orderOut(nil)

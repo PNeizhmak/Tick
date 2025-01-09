@@ -10,7 +10,17 @@ import Cocoa
 class SoundManager {
     static let shared = SoundManager()
 
+    private var currentlyPlayingSounds: [String: NSSound] = [:]
+    private let soundQueue = DispatchQueue(label: "com.tick.soundManagerQueue")
+    private var suppressStopSoundGlobally = false
+
     private init() {}
+
+    func suppressStopSoundGlobally(_ suppress: Bool) {
+        soundQueue.async {
+            self.suppressStopSoundGlobally = suppress
+        }
+    }
 
     func playTransitionSound(for color: NSColor) {
         guard UserDefaults.standard.bool(forKey: "SoundsEnabled") else {
@@ -34,20 +44,42 @@ class SoundManager {
     }
 
     func playTimerStoppedSound() {
-        guard UserDefaults.standard.bool(forKey: "SoundsEnabled") else {
-            print("Sounds are disabled. No sound will be played.")
-            return
-        }
+        soundQueue.async { [weak self] in
+            guard let self = self else { return }
 
-        playSound(named: "Pop")
+            if self.suppressStopSoundGlobally {
+                return
+            }
+
+            guard UserDefaults.standard.bool(forKey: "SoundsEnabled") else {
+                return
+            }
+
+            self.playSound(named: "Pop")
+        }
     }
 
     private func playSound(named soundName: String) {
-        if let sound = NSSound(named: soundName) {
-            print("Playing sound: \(soundName)")
-            sound.play()
-        } else {
-            print("Warning: Sound \(soundName) not found!")
+        soundQueue.async { [weak self] in
+            guard let self = self else { return }
+
+            if let existingSound = self.currentlyPlayingSounds[soundName], existingSound.isPlaying {
+                return
+            }
+
+            if let sound = NSSound(named: soundName) {
+                print("Playing sound: \(soundName)")
+                sound.play()
+                self.currentlyPlayingSounds[soundName] = sound
+
+                DispatchQueue.global().asyncAfter(deadline: .now() + sound.duration) {
+                    self.soundQueue.async { [weak self] in
+                        self?.currentlyPlayingSounds.removeValue(forKey: soundName)
+                    }
+                }
+            } else {
+                print("Warning: Sound \(soundName) not found!")
+            }
         }
     }
 }

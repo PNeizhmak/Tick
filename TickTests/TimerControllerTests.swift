@@ -27,21 +27,29 @@ class TimerControllerTests: XCTestCase {
         super.tearDown()
     }
 
+    func testStopTimerWithSoundSuppression() {
+        timerController.startTimer(duration: 60)
+        timerController.stopTimer(suppressStopSound: true)
+
+        XCTAssertFalse(timerManager.isTimerRunning)
+        XCTAssertEqual(timerManager.remainingTime, 0)
+    }
+
+    func testStopTimerWithoutSoundSuppression() {
+        timerController.startTimer(duration: 60)
+        timerController.stopTimer(suppressStopSound: false)
+
+        XCTAssertFalse(timerManager.isTimerRunning)
+        XCTAssertEqual(timerManager.remainingTime, 0)
+    }
+
     func testStopSoundOnTimerComplete() {
         let expectation = self.expectation(description: "Timer complete triggers stop sound")
-
         timerManager.onTimerComplete = {
             expectation.fulfill()
         }
 
-        timerController.startTimer(duration: 1) // Start a very short timer
+        timerController.startTimer(duration: 1)
         wait(for: [expectation], timeout: 2)
-    }
-
-    func testStopSoundOnManualStop() {
-        timerController.startTimer(duration: 60)
-        timerController.stopTimer()
-
-        XCTAssertTrue(true)
     }
 }

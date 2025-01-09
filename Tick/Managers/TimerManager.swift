@@ -17,7 +17,8 @@ class TimerManager: ObservableObject {
     
     var onTimerUpdate: ((Double) -> Void)?
     var onTimerComplete: (() -> Void)?
-
+    var onTimerStop: (() -> Void)?
+    
     var isTimerRunning: Bool {
         return remainingTime > 0 && timer != nil
     }
@@ -39,9 +40,9 @@ class TimerManager: ObservableObject {
     }
 
 
-    func stopTimer() {
+    func stopTimer(suppressStopSound: Bool = false) {
         guard timer != nil else { return }
-        timer?.invalidate() // Stop the Timer
+        timer?.invalidate()
         timer = nil
         remainingTime = 0
         totalTime = 0
@@ -52,6 +53,10 @@ class TimerManager: ObservableObject {
             isCompleted = true
             onTimerUpdate?(0.0)
             onTimerComplete?()
+
+            if !suppressStopSound {
+                onTimerStop?()
+            }
         }
     }
 
