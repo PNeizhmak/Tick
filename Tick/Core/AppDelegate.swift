@@ -21,7 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuManager = MenuManager(statusItem: statusItem, appDelegate: self)
         menuManager.setupMenu()
 
-        overlayController = TimerOverlayController()
+        overlayController = TimerOverlayController(timerManager: timerManager)
         timerController = TimerController(timerManager: timerManager, overlayController: overlayController)
         statusBarManager = StatusBarManager(statusItem: statusItem, timerManager: timerManager)
         
@@ -173,5 +173,31 @@ extension AppDelegate {
     @objc func toggleSoundPreference(_ sender: NSMenuItem) {
         PreferencesManager.shared.toggleSoundPreference()
         sender.title = PreferencesManager.shared.soundPreferenceToggleTitle()
+    }
+
+    @objc func toggleMonitorSelection(_ sender: NSMenuItem) {
+        guard let monitorName = sender.representedObject as? String else { return }
+        var selectedMonitors = PreferencesManager.shared.getSelectedMonitors()
+        
+        if sender.state == .on {
+            selectedMonitors.remove(monitorName)
+            print("Removed monitor: \(monitorName)")
+        } else {
+            selectedMonitors.insert(monitorName)
+            print("Added monitor: \(monitorName)")
+        }
+        
+        if selectedMonitors.isEmpty {
+            if let builtInDisplay = NSScreen.screens.first(where: { $0.localizedName.contains("Built-in") }) {
+                selectedMonitors.insert(builtInDisplay.localizedName)
+                print("No monitors selected, defaulting to built-in display: \(builtInDisplay.localizedName)")
+            }
+        }
+        
+        print("Selected monitors: \(selectedMonitors)")
+        PreferencesManager.shared.setSelectedMonitors(selectedMonitors)
+        overlayController.refreshWindows()
+        
+        menuManager.setupMenu()
     }
 }

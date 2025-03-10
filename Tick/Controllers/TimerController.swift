@@ -58,11 +58,10 @@ class TimerController {
             SoundManager.shared.suppressStopSoundGlobally(false)
         }
         
-        // small delay to separate stop and start logic
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             print("Starting new timer with duration: \(duration) seconds.")
             self.timerManager.startTimer(duration: duration)
-            self.overlayController.window?.orderFront(nil)
+            self.overlayController.showWindows()
 
             let initialProgress = 1.0
             let initialColor = self.getProgressColor(for: initialProgress)
@@ -76,7 +75,7 @@ class TimerController {
 
     private func startNewTimer(duration: TimeInterval) {
         timerManager.startTimer(duration: duration)
-        overlayController.window?.orderFront(nil)
+        overlayController.showWindows()
 
         let initialProgress = 1.0
         let initialColor = getProgressColor(for: initialProgress)
@@ -108,7 +107,7 @@ class TimerController {
 
     private func resetTimerUI() {
         overlayController.update(progress: 0.0, color: .systemBlue)
-        overlayController.window?.orderOut(nil)
+        overlayController.hideWindows()
         lastPlayedColor = nil
     }
 

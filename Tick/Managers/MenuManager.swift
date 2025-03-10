@@ -59,6 +59,29 @@ class MenuManager {
         soundToggleItem.target = appDelegate
         preferencesMenu.addItem(soundToggleItem)
 
+        let monitorSelectionSubmenu = NSMenu()
+        let selectedMonitors = PreferencesManager.shared.getSelectedMonitors()
+        
+        print("Setting up monitor selection menu")
+        print("Selected monitors: \(selectedMonitors)")
+        print("Available screens: \(NSScreen.screens.map { $0.localizedName })")
+        
+        for screen in NSScreen.screens {
+            let item = NSMenuItem(
+                title: screen.localizedName,
+                action: #selector(appDelegate.toggleMonitorSelection),
+                keyEquivalent: ""
+            )
+            item.state = selectedMonitors.contains(screen.localizedName) ? .on : .off
+            item.representedObject = screen.localizedName
+            monitorSelectionSubmenu.addItem(item)
+            print("Added menu item for screen: \(screen.localizedName), state: \(item.state.rawValue)")
+        }
+
+        let monitorSelectionMenu = NSMenuItem(title: "Select Monitors", action: nil, keyEquivalent: "")
+        monitorSelectionMenu.submenu = monitorSelectionSubmenu
+        preferencesMenu.addItem(monitorSelectionMenu)
+
         let preferencesItem = NSMenuItem(title: "Preferences", action: nil, keyEquivalent: "")
         preferencesItem.submenu = preferencesMenu
         menu.addItem(preferencesItem)

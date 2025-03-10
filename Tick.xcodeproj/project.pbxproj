@@ -24,10 +24,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F31D2B032D2330CB00DF129E /* TickTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickTests.xctest; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app/Contents/PlugIns/TickTests.xctest; sourceTree = "<absolute>"; };
-		F31D2B0D2D2330CB00DF129E /* TickUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickUITests.xctest; path = "/Users/paveln/Work/Repo/Tick/build/Debug/TickUITests-Runner.app/Contents/PlugIns/TickUITests.xctest"; sourceTree = "<absolute>"; };
+		F37754002D799FE200F4C46A /* TickTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickTests.xctest; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app/Contents/PlugIns/TickTests.xctest; sourceTree = "<absolute>"; };
+		F37754012D799FE200F4C46A /* TickUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickUITests.xctest; path = "/Users/paveln/Work/Repo/Tick/build/Debug/TickUITests-Runner.app/Contents/PlugIns/TickUITests.xctest"; sourceTree = "<absolute>"; };
+		F377542F2D7EFE4600F4C46A /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Tick.app; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app; sourceTree = "<absolute>"; };
 		F378A6462D2B0BED002CBC62 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		F378A67F2D307944002CBC62 /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Tick.app; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -105,7 +105,7 @@
 			packageProductDependencies = (
 			);
 			productName = Tick;
-			productReference = F378A67F2D307944002CBC62 /* Tick.app */;
+			productReference = F377542F2D7EFE4600F4C46A /* Tick.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F31D2B022D2330CB00DF129E /* TickTests */ = {
@@ -128,7 +128,7 @@
 			packageProductDependencies = (
 			);
 			productName = TickTests;
-			productReference = F31D2B032D2330CB00DF129E /* TickTests.xctest */;
+			productReference = F37754002D799FE200F4C46A /* TickTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		F31D2B0C2D2330CB00DF129E /* TickUITests */ = {
@@ -148,7 +148,7 @@
 			packageProductDependencies = (
 			);
 			productName = TickUITests;
-			productReference = F31D2B0D2D2330CB00DF129E /* TickUITests.xctest */;
+			productReference = F37754012D799FE200F4C46A /* TickUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -400,7 +400,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.0.3;
+				MARKETING_VERSION = 0.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.project.Tick;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -432,7 +432,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.0.3;
+				MARKETING_VERSION = 0.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.project.Tick;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
