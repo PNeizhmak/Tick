@@ -30,6 +30,16 @@
 		F378A6462D2B0BED002CBC62 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F3255FE92D98332000866496 /* Exceptions for "Build" folder in "Tick" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Tick App.dmg",
+			);
+			target = F31D2AF12D2330C900DF129E /* Tick */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F31D2AF42D2330C900DF129E /* Tick */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -43,6 +53,9 @@
 		};
 		F378A63D2D2AF1CF002CBC62 /* Build */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F3255FE92D98332000866496 /* Exceptions for "Build" folder in "Tick" target */,
+			);
 			path = Build;
 			sourceTree = "<group>";
 		};
