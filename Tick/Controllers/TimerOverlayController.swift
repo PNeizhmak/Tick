@@ -46,13 +46,8 @@ class TimerOverlayController: NSWindowController {
 
         let selectedMonitors = PreferencesManager.shared.getSelectedMonitors()
 
-        print("Setting up overlay windows:")
-        print("Selected monitors: \(selectedMonitors)")
-        print("Available screens: \(NSScreen.screens.map { $0.localizedName })")
-
         for screen in NSScreen.screens {
             if selectedMonitors.contains(screen.localizedName) {
-                print("Creating overlay for screen: \(screen.localizedName)")
                 createOverlayWindow(for: screen)
             }
         }
@@ -61,12 +56,14 @@ class TimerOverlayController: NSWindowController {
     private func createOverlayWindow(for screen: NSScreen) {
         let screenFrame = screen.frame
         let visibleFrame = screen.visibleFrame
-        let menuBarHeight = max(screenFrame.height - (visibleFrame.origin.y + visibleFrame.height), 22.0)
-
-        print("Creating window for screen: \(screen.localizedName)")
-        print("Screen frame: \(screenFrame)")
-        print("Visible frame: \(visibleFrame)")
-        print("Menu bar height: \(menuBarHeight)")
+        
+        // Menu bar height calculation
+        let menuBarHeight: CGFloat
+        if screen.localizedName.contains("Built-in") {
+            menuBarHeight = max(screenFrame.height - (visibleFrame.origin.y + visibleFrame.height), 22.0)
+        } else {
+            menuBarHeight = 24.0
+        }
 
         let windowFrame = NSRect(
             x: screenFrame.origin.x,
@@ -84,21 +81,21 @@ class TimerOverlayController: NSWindowController {
         
         overlayWindow.isFloatingPanel = true
         overlayWindow.level = .statusBar
-        overlayWindow.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
+        overlayWindow.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         overlayWindow.backgroundColor = .clear
         overlayWindow.isOpaque = false
         overlayWindow.ignoresMouseEvents = true
         overlayWindow.hasShadow = false
+        
+        if overlayWindow.contentView == nil {
+            overlayWindow.contentView = NSView(frame: NSRect(x: 0, y: 0, width: screenFrame.width, height: menuBarHeight))
+        }
         
         let progressBar = NSView(frame: .zero)
         progressBar.wantsLayer = true
         progressBar.layer?.backgroundColor = NSColor.systemBlue.withAlphaComponent(0.8).cgColor
         progressBar.layer?.cornerRadius = 2.0
         progressBar.translatesAutoresizingMaskIntoConstraints = false
-        
-        if overlayWindow.contentView == nil {
-            overlayWindow.contentView = NSView(frame: NSRect(x: 0, y: 0, width: screenFrame.width, height: menuBarHeight))
-        }
         
         overlayWindow.contentView?.addSubview(progressBar)
 
@@ -118,14 +115,9 @@ class TimerOverlayController: NSWindowController {
             overlayWindow.setFrame(windowFrame, display: true)
             
             if let windowScreen = overlayWindow.screen, windowScreen != screen {
-                print("Window was assigned to wrong screen, fixing...")
                 overlayWindow.setFrame(windowFrame, display: true)
             }
         }
-
-        print("Window created successfully for screen: \(screen.localizedName)")
-        print("Window frame: \(overlayWindow.frame)")
-        print("Window screen: \(overlayWindow.screen?.localizedName ?? "unknown")")
     }
 
     func update(progress: Double, color: NSColor) {
@@ -162,15 +154,17 @@ class TimerOverlayController: NSWindowController {
     }
 
     func showWindows() {
-        print("Showing \(overlayWindows.count) windows")
         overlayWindows.forEach { window in
-            print("Showing window at frame: \(window.frame)")
-            print("Window screen: \(window.screen?.localizedName ?? "unknown")")
-            
             if let screen = window.screen {
                 let screenFrame = screen.frame
                 let visibleFrame = screen.visibleFrame
-                let menuBarHeight = max(screenFrame.height - (visibleFrame.origin.y + visibleFrame.height), 22.0)
+                
+                let menuBarHeight: CGFloat
+                if screen.localizedName.contains("Built-in") {
+                    menuBarHeight = max(screenFrame.height - (visibleFrame.origin.y + visibleFrame.height), 22.0)
+                } else {
+                    menuBarHeight = 24.0
+                }
                 
                 let windowFrame = NSRect(
                     x: screenFrame.origin.x,
