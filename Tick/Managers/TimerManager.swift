@@ -8,6 +8,10 @@
 import Foundation
 
 class TimerManager: ObservableObject {
+    enum Notifications {
+        static let startTimer = Notification.Name("com.tick.timer.start")
+    }
+    
     @Published var remainingTime: TimeInterval = 0
     @Published var totalTime: TimeInterval = 0
     private var timer: Timer?

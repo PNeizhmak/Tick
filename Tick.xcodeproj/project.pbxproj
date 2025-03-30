@@ -24,16 +24,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F3255FB82D982D7900866496 /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Tick.app; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app; sourceTree = "<absolute>"; };
 		F3255FB92D982D7900866496 /* TickTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickTests.xctest; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app/Contents/PlugIns/TickTests.xctest; sourceTree = "<absolute>"; };
 		F3255FBA2D982D7900866496 /* TickUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TickUITests.xctest; path = "/Users/paveln/Work/Repo/Tick/build/Debug/TickUITests-Runner.app/Contents/PlugIns/TickUITests.xctest"; sourceTree = "<absolute>"; };
+		F32560202D995F3700866496 /* Tick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Tick.app; path = /Users/paveln/Work/Repo/Tick/build/Debug/Tick.app; sourceTree = "<absolute>"; };
 		F378A6462D2B0BED002CBC62 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F3255FE92D98332000866496 /* Exceptions for "Build" folder in "Tick" target */ = {
+		F32560232D99604700866496 /* Exceptions for "Build" folder in "Tick" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				demo.gif,
 				"Tick App.dmg",
 			);
 			target = F31D2AF12D2330C900DF129E /* Tick */;
@@ -54,7 +55,7 @@
 		F378A63D2D2AF1CF002CBC62 /* Build */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				F3255FE92D98332000866496 /* Exceptions for "Build" folder in "Tick" target */,
+				F32560232D99604700866496 /* Exceptions for "Build" folder in "Tick" target */,
 			);
 			path = Build;
 			sourceTree = "<group>";
@@ -118,7 +119,7 @@
 			packageProductDependencies = (
 			);
 			productName = Tick;
-			productReference = F3255FB82D982D7900866496 /* Tick.app */;
+			productReference = F32560202D995F3700866496 /* Tick.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F31D2B022D2330CB00DF129E /* TickTests */ = {
@@ -413,7 +414,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.0.4;
+				MARKETING_VERSION = 0.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.project.Tick;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -445,7 +446,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.0.4;
+				MARKETING_VERSION = 0.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.project.Tick;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

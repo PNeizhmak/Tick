@@ -6,6 +6,7 @@
 //
 
 import Cocoa
+import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
@@ -13,17 +14,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var overlayController: TimerOverlayController!
     var menuManager: MenuManager!
     var timerController: TimerController!
-    var statusBarManager: StatusBarManager!
+    private var presetManagerWindow: NSWindow?
+    private var setTimerWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
-
+        
         menuManager = MenuManager(statusItem: statusItem, appDelegate: self)
         menuManager.setupMenu()
 
         overlayController = TimerOverlayController(timerManager: timerManager)
         timerController = TimerController(timerManager: timerManager, overlayController: overlayController)
-        statusBarManager = StatusBarManager(statusItem: statusItem, timerManager: timerManager)
         
         timerController.addTimerUpdateHandler { [weak self] progress in
             guard let self = self else { return }
@@ -37,6 +38,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         checkForUpdatesAutomatically()
+        
+        // Setup notification observer for preset changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(presetsDidChange),
+            name: PreferencesManager.Notifications.presetsDidChange,
+            object: nil
+        )
     }
 
     func setupStatusItem() {
@@ -83,79 +92,78 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func promptSetCustomDuration() {
-        let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 300, height: 200),
-                            styleMask: [.titled, .closable],
-                            backing: .buffered,
-                            defer: false)
-        panel.title = "Set Timer Duration"
-        panel.delegate = self
-        
-        let descriptionLabel = NSTextField(labelWithString: "Set the duration for the timer:")
-        descriptionLabel.frame = NSRect(x: 50, y: 150, width: 200, height: 20)
-        descriptionLabel.alignment = .center
-        descriptionLabel.isEditable = false
-
-        let timePicker = NSDatePicker()
-        timePicker.datePickerMode = .single
-        timePicker.datePickerElements = [.hourMinuteSecond]
-        timePicker.dateValue = Calendar.current.date(from: DateComponents(hour: 0, minute: 20)) ?? Date()
-        timePicker.frame = NSRect(x: 50, y: 100, width: 200, height: 30)
-
-        let hintLabel = NSTextField(labelWithString: "Hours : Minutes : Seconds")
-        hintLabel.frame = NSRect(x: 50, y: 70, width: 200, height: 20)
-        hintLabel.alignment = .center
-        hintLabel.font = NSFont.systemFont(ofSize: 10)
-        hintLabel.textColor = NSColor.secondaryLabelColor
-
-        let okButton = NSButton(title: "OK", target: self, action: #selector(confirmTimePickerDuration))
-        okButton.frame = NSRect(x: 100, y: 30, width: 100, height: 30)
-
-        if let contentView = panel.contentView {
-            contentView.addSubview(descriptionLabel)
-            contentView.addSubview(timePicker)
-            contentView.addSubview(hintLabel)
-            contentView.addSubview(okButton)
-        }
-
-        timePicker.tag = 1001
-        panel.isFloatingPanel = true
-
-        NSApp.runModal(for: panel)
-    }
-
-    @objc func confirmTimePickerDuration(_ sender: NSButton) {
-        guard let panel = sender.window as? NSPanel,
-              let timePicker = panel.contentView?.viewWithTag(1001) as? NSDatePicker else { return }
-
-        let selectedDate = timePicker.dateValue
-        let calendar = Calendar.current
-
-        let components = calendar.dateComponents([.hour, .minute, .second], from: selectedDate)
-        let totalSeconds = (components.hour ?? 0) * 3600 + (components.minute ?? 0) * 60 + (components.second ?? 0)
-
-        guard totalSeconds > 0 else {
-            showInvalidDurationError(message: "Please select a duration greater than 0.")
+        if let existingWindow = setTimerWindow {
+            existingWindow.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
             return
         }
-
-        timerController.startTimer(duration: TimeInterval(totalSeconds))
-
-        panel.close()
-        NSApp.stopModal()
-    }
-
-    func showInvalidDurationError(message: String) {
-        let errorAlert = NSAlert()
-        errorAlert.messageText = "Invalid Duration"
-        errorAlert.informativeText = message
-        errorAlert.alertStyle = .critical
-        errorAlert.addButton(withTitle: "OK")
-        errorAlert.runModal()
+        
+        let setTimerView = SetTimerView(isPresented: .init(get: {
+            return self.setTimerWindow != nil
+        }, set: { isPresented in
+            if !isPresented {
+                self.setTimerWindow?.close()
+                self.setTimerWindow = nil
+            }
+        })) { duration in
+            self.timerController.startTimer(duration: duration)
+        }
+        
+        let hostingController = NSHostingController(rootView: setTimerView)
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 500),
+            styleMask: [.titled, .closable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentViewController = hostingController
+        window.title = "Custom Duration"
+        window.isReleasedWhenClosed = false
+        window.center()
+        
+        setTimerWindow = window
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc func stopAndResetTimer() {
         timerController.stopTimer()
-        statusBarManager.resetStatusBarIcon()
+        menuManager.resetStatusBarIcon()
+        menuManager.updateTimerItem(with: nil)
+    }
+
+    @objc func startPresetTimer(_ sender: NSMenuItem) {
+        guard let preset = sender.representedObject as? Preset else { return }
+        timerController.startTimer(duration: preset.duration)
+    }
+
+    @objc func showPresetManager() {
+        if let existingWindow = presetManagerWindow {
+            existingWindow.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+        
+        let presetManager = PresetManager()
+        let hostingController = NSHostingController(rootView: presetManager)
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 500),
+            styleMask: [.titled, .closable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentViewController = hostingController
+        window.title = "Timer Presets"
+        window.isReleasedWhenClosed = false
+        window.center()
+        
+        presetManagerWindow = window
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @objc private func presetsDidChange() {
+        menuManager.refreshPresets()
     }
 }
 
@@ -198,6 +206,6 @@ extension AppDelegate {
         PreferencesManager.shared.setSelectedMonitors(selectedMonitors)
         overlayController.refreshWindows()
         
-        menuManager.setupMenu()
+        menuManager.updateMonitorSelection()
     }
 }
