@@ -18,13 +18,19 @@ class TimerManager: ObservableObject {
     private var startTime: Date?
     private var endTime: Date?
     private var isCompleted: Bool = false
+    private var isPaused: Bool = false
+    private var pauseTime: Date?
     
     var onTimerUpdate: ((Double) -> Void)?
     var onTimerComplete: (() -> Void)?
     var onTimerStop: (() -> Void)?
     
     var isTimerRunning: Bool {
-        return remainingTime > 0 && timer != nil
+        return remainingTime > 0 && timer != nil && !isPaused
+    }
+    
+    var isTimerPaused: Bool {
+        return isPaused
     }
 
     func startTimer(duration: TimeInterval) {
@@ -77,5 +83,27 @@ class TimerManager: ObservableObject {
 
         let progress = remainingTime / totalTime
         onTimerUpdate?(progress)
+    }
+
+    func pauseTimer() {
+        guard timer != nil && !isPaused && remainingTime > 0 else { return }
+        isPaused = true
+        pauseTime = Date()
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    func resumeTimer() {
+        guard isPaused && remainingTime > 0 else { return }
+        isPaused = false
+        
+        if let pauseTime = pauseTime, let endTime = endTime {
+            let timePaused = Date().timeIntervalSince(pauseTime)
+            self.endTime = endTime.addingTimeInterval(timePaused)
+        }
+        
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+        RunLoop.current.add(timer!, forMode: .common)
+        self.pauseTime = nil
     }
 }

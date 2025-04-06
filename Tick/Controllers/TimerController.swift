@@ -97,6 +97,27 @@ class TimerController {
         isStoppingTimer = false
     }
     
+    func pauseTimer() {
+        if !timerManager.isTimerPaused && timerManager.remainingTime > 0 {
+            timerManager.pauseTimer()
+            soundManager.playTimerPausedSound()
+            // Keep the overlay windows visible but stop updating
+            let currentColor = overlayController.currentProgressBarColor() ?? .systemBlue
+            overlayController.update(progress: timerManager.remainingTime / timerManager.totalTime, color: currentColor)
+        }
+    }
+    
+    func resumeTimer() {
+        if timerManager.isTimerPaused && timerManager.remainingTime > 0 {
+            timerManager.resumeTimer()
+            soundManager.playTimerResumedSound()
+            // Resume normal color updates
+            let progress = timerManager.remainingTime / timerManager.totalTime
+            let newColor = getProgressColor(for: progress)
+            overlayController.update(progress: progress, color: newColor)
+        }
+    }
+
     func addTimerUpdateHandler(_ handler: @escaping (Double) -> Void) {
         let originalHandler = self.timerManager.onTimerUpdate
         self.timerManager.onTimerUpdate = { progress in

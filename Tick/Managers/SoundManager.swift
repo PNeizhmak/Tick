@@ -59,6 +59,30 @@ class SoundManager {
         }
     }
 
+    func playTimerPausedSound() {
+        soundQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            guard UserDefaults.standard.bool(forKey: "SoundsEnabled") else {
+                return
+            }
+            
+            self.playSound(named: "Tink")
+        }
+    }
+
+    func playTimerResumedSound() {
+        soundQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            guard UserDefaults.standard.bool(forKey: "SoundsEnabled") else {
+                return
+            }
+            
+            self.playSound(named: "Blow")
+        }
+    }
+
     private func playSound(named soundName: String) {
         soundQueue.async { [weak self] in
             guard let self = self else { return }

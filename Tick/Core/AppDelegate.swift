@@ -132,6 +132,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuManager.updateTimerItem(with: nil)
     }
 
+    @objc func togglePauseTimer() {
+        if timerManager.isTimerRunning {
+            timerController.pauseTimer()
+        } else {
+            timerController.resumeTimer()
+        }
+        menuManager.updateTimerItem(with: timerManager.remainingTime)
+    }
+
     @objc func startPresetTimer(_ sender: NSMenuItem) {
         guard let preset = sender.representedObject as? Preset else { return }
         timerController.startTimer(duration: preset.duration)

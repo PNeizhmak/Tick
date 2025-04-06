@@ -14,6 +14,7 @@ final class MenuManager {
     private weak var appDelegate: AppDelegate?
     private var timerItem: NSMenuItem!
     private var stopTimerItem: NSMenuItem!
+    private var pauseTimerItem: NSMenuItem!
     private var menu: NSMenu!
     private var presetsMenu: NSMenu!
     
@@ -60,12 +61,52 @@ final class MenuManager {
     
     private func setupTimerItems() {
         timerItem = NSMenuItem(title: "No Timer Active", action: nil, keyEquivalent: "")
+        timerItem.attributedTitle = NSAttributedString(string: "No Timer Active")
+        menu.minimumWidth = 175
         menu.addItem(timerItem)
-        
-        stopTimerItem = NSMenuItem(title: "Stop Timer", action: #selector(appDelegate?.stopAndResetTimer), keyEquivalent: "")
-        stopTimerItem.target = appDelegate
-        
         menu.addItem(NSMenuItem.separator())
+    }
+    
+    private func updateActiveTimer(_ remaining: TimeInterval) {
+        let minutes = Int(remaining) / 60
+        let seconds = Int(remaining) % 60
+        let title = String(format: "Timer: %02d:%02d", minutes, seconds)
+        timerItem.attributedTitle = NSAttributedString(string: title)
+        
+        // Only add control item if it doesn't exist
+        if menu.items.first(where: { $0.view != nil }) == nil {
+            let controlItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+            let controlView = NSView(frame: NSRect(x: 0, y: 0, width: 175, height: 30))
+            
+            let stopButton = NSButton(frame: NSRect(x: 0, y: 0, width: 87, height: 30))
+            stopButton.title = "Stop"
+            stopButton.bezelStyle = .rounded
+            stopButton.target = appDelegate
+            stopButton.action = #selector(appDelegate?.stopAndResetTimer)
+            
+            let pauseButton = NSButton(frame: NSRect(x: 88, y: 0, width: 87, height: 30))
+            pauseButton.title = appDelegate?.timerManager.isTimerPaused ?? false ? "Resume" : "Pause"
+            pauseButton.bezelStyle = .rounded
+            pauseButton.target = appDelegate
+            pauseButton.action = #selector(appDelegate?.togglePauseTimer)
+            
+            controlView.addSubview(stopButton)
+            controlView.addSubview(pauseButton)
+            controlItem.view = controlView
+            
+            menu.insertItem(controlItem, at: 1)
+        } else if let controlItem = menu.items.first(where: { $0.view != nil }),
+                  let controlView = controlItem.view,
+                  let pauseButton = controlView.subviews.last as? NSButton {
+            pauseButton.title = appDelegate?.timerManager.isTimerPaused ?? false ? "Resume" : "Pause"
+        }
+    }
+    
+    private func updateInactiveTimer() {
+        timerItem.attributedTitle = NSAttributedString(string: "No Timer Active")
+        if let controlItem = menu.items.first(where: { $0.view != nil }) {
+            menu.removeItem(controlItem)
+        }
     }
     
     private func setupQuickStartMenu() {
@@ -124,23 +165,6 @@ final class MenuManager {
         
         presetsMenu.addItem(NSMenuItem.separator())
         presetsMenu.addItem(createManagePresetsItem())
-    }
-    
-    private func updateActiveTimer(_ remaining: TimeInterval) {
-        let minutes = Int(remaining) / 60
-        let seconds = Int(remaining) % 60
-        timerItem.title = String(format: "Timer: %02d:%02d", minutes, seconds)
-        
-        if !menu.items.contains(stopTimerItem) {
-            menu.insertItem(stopTimerItem, at: 1)
-        }
-    }
-    
-    private func updateInactiveTimer() {
-        timerItem.title = "No Timer Active"
-        if let index = menu.items.firstIndex(of: stopTimerItem) {
-            menu.removeItem(at: index)
-        }
     }
     
     private func createQuickStartItem(duration: Int) -> NSMenuItem {
