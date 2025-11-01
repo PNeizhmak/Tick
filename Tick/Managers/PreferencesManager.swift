@@ -13,9 +13,11 @@ class PreferencesManager {
 
     enum Notifications {
         static let presetsDidChange = Notification.Name("com.tick.presets.didChange")
+        static let colorSchemeDidChange = Notification.Name("com.tick.colorScheme.didChange")
     }
 
     private let presetsKey = "TimerPresets"
+    private let colorSchemeKey = "CountdownColorScheme"
 
     private init() {
         if getPresets().isEmpty {
@@ -25,6 +27,10 @@ class PreferencesManager {
                 Preset(name: "Focus time", duration: 50 * 60)  // 50 minutes
             ]
             setPresets(defaultPresets)
+        }
+
+        if UserDefaults.standard.data(forKey: colorSchemeKey) == nil {
+            setColorScheme(ColorScheme.classic(), notify: false)
         }
     }
 
@@ -84,5 +90,30 @@ class PreferencesManager {
         var presets = getPresets()
         presets.removeAll { $0.id == id }
         setPresets(presets)
+    }
+
+    // MARK: - Color Scheme
+    func getColorScheme() -> ColorScheme {
+        if let data = UserDefaults.standard.data(forKey: colorSchemeKey),
+           let scheme = try? JSONDecoder().decode(ColorScheme.self, from: data) {
+            if scheme.type == .adaptive {
+                return ColorSchemeProvider.adaptiveScheme()
+            }
+            return scheme
+        }
+        return ColorScheme.classic()
+    }
+
+    func setColorScheme(_ scheme: ColorScheme, notify: Bool = true) {
+        if let data = try? JSONEncoder().encode(scheme) {
+            UserDefaults.standard.set(data, forKey: colorSchemeKey)
+        }
+        if notify {
+            NotificationCenter.default.post(name: Notifications.colorSchemeDidChange, object: nil)
+        }
+    }
+
+    func resetColorSchemeToDefault() {
+        setColorScheme(ColorScheme.classic())
     }
 }

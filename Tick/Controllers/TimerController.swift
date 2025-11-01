@@ -22,6 +22,7 @@ class TimerController {
         self.soundManager = soundManager
 
         setupTimerHandlers()
+        NotificationCenter.default.addObserver(self, selector: #selector(colorSchemeDidChange), name: PreferencesManager.Notifications.colorSchemeDidChange, object: nil)
     }
 
     private func setupTimerHandlers() {
@@ -59,7 +60,9 @@ class TimerController {
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            #if DEBUG
             print("Starting new timer with duration: \(duration) seconds.")
+            #endif
             self.timerManager.startTimer(duration: duration)
             self.overlayController.showWindows()
 
@@ -67,7 +70,9 @@ class TimerController {
             let initialColor = self.getProgressColor(for: initialProgress)
             self.overlayController.update(progress: initialProgress, color: initialColor)
 
+            #if DEBUG
             print("Playing transition sound (Submarine).")
+            #endif
             self.soundManager.playTransitionSound(for: initialColor)
             self.lastPlayedColor = initialColor
         }
@@ -133,13 +138,24 @@ class TimerController {
     }
 
     private func getProgressColor(for progress: Double) -> NSColor {
+        let scheme = PreferencesManager.shared.getColorScheme()
+        let high = NSColor.from(scheme.high)
+        let mid = NSColor.from(scheme.mid)
+        let low = NSColor.from(scheme.low)
         switch progress {
-        case let p where p > 0.5:
-            return .systemGreen
-        case let p where p > 0.2:
-            return .systemYellow
-        default:
-            return .systemRed
+        case let p where p > 0.5: return high
+        case let p where p > 0.2: return mid
+        default: return low
         }
+    }
+
+    @objc private func colorSchemeDidChange() {
+        let total = timerManager.totalTime
+        guard total > 0 else { return }
+        let progress = timerManager.remainingTime / total
+        let newColor = getProgressColor(for: progress)
+        overlayController.update(progress: progress, color: newColor)
+        // Avoid triggering a transition sound purely due to scheme change
+        lastPlayedColor = newColor
     }
 }

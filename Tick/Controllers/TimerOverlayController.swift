@@ -177,17 +177,20 @@ class TimerOverlayController: NSWindowController {
             }
             
             window.orderFront(nil)
-            window.makeKeyAndOrderFront(nil)
         }
     }
 
     func hideWindows() {
+        #if DEBUG
         print("Hiding \(overlayWindows.count) windows")
+        #endif
         overlayWindows.forEach { $0.orderOut(nil) }
     }
 
     func refreshWindows() {
+        #if DEBUG
         print("Refreshing overlay windows")
+        #endif
         // Store current timer state if running
         let wasRunning = timerManager?.isTimerRunning ?? false
         let currentProgress = timerManager?.remainingTime ?? 0

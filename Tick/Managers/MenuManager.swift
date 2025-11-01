@@ -142,6 +142,7 @@ final class MenuManager {
         
         setupSoundPreference(in: preferencesMenu)
         setupMonitorSelection(in: preferencesMenu)
+        setupCountdownColor(in: preferencesMenu)
         
         menu.addItem(preferencesItem)
     }
@@ -279,5 +280,34 @@ final class MenuManager {
         let monitorSelectionMenu = NSMenuItem(title: "Show Timer On", action: nil, keyEquivalent: "")
         monitorSelectionMenu.submenu = monitorSelectionSubmenu
         menu.addItem(monitorSelectionMenu)
+    }
+
+    private func setupCountdownColor(in menu: NSMenu) {
+        let colorSubmenu = NSMenu()
+        let currentType = PreferencesManager.shared.getColorScheme().type
+        
+        let items: [(String, Selector, ColorSchemeType)] = [
+            ("Classic (Green/Yellow/Red)", #selector(AppDelegate.setColorSchemeClassic), .classic),
+            ("Adaptive (Auto)", #selector(AppDelegate.setColorSchemeAdaptive), .adaptive),
+            ("Vivid (Cyan/Purple/Orange)", #selector(AppDelegate.setColorSchemeVivid), .vivid),
+            ("Ocean (Teal/Blue/Indigo)", #selector(AppDelegate.setColorSchemeOcean), .ocean),
+            ("Warm (Orange/Yellow/Brown)", #selector(AppDelegate.setColorSchemeWarm), .warm),
+            ("Cool (Teal/Blue/Indigo)", #selector(AppDelegate.setColorSchemeCool), .cool),
+            ("Blue Contrast (Yellow/Orange/Magenta)", #selector(AppDelegate.setColorSchemeBlueMenuContrast), .blueMenuContrast),
+            ("High Contrast (White/Yellow/Black)", #selector(AppDelegate.setColorSchemeHighContrast), .highContrast),
+            ("Monochrome (Gray)", #selector(AppDelegate.setColorSchemeMonochrome), .monochrome)
+        ]
+        for (title, action, type) in items {
+            let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
+            item.target = appDelegate
+            item.state = (type == currentType) ? .on : .off
+            colorSubmenu.addItem(item)
+        }
+        
+        // No reset item; Classic preset serves as the default
+        
+        let colorMenu = NSMenuItem(title: "Countdown Color", action: nil, keyEquivalent: "")
+        colorMenu.submenu = colorSubmenu
+        menu.addItem(colorMenu)
     }
 }

@@ -183,6 +183,66 @@ extension AppDelegate: NSWindowDelegate {
 }
 
 extension AppDelegate {
+    // MARK: - Countdown Color actions
+    @objc func setColorSchemeClassic() {
+        PreferencesManager.shared.setColorScheme(ColorScheme.classic())
+        refreshColorDependentUI()
+    }
+
+    @objc func setColorSchemeAdaptive() {
+        let scheme = ColorSchemeProvider.adaptiveScheme()
+        PreferencesManager.shared.setColorScheme(scheme)
+        refreshColorDependentUI()
+    }
+
+    @objc func setColorSchemeVivid() {
+        PreferencesManager.shared.setColorScheme(ColorScheme.vivid())
+        refreshColorDependentUI()
+    }
+
+    @objc func setColorSchemeOcean() {
+        PreferencesManager.shared.setColorScheme(ColorScheme.ocean())
+        refreshColorDependentUI()
+    }
+
+    @objc func setColorSchemeWarm() {
+        PreferencesManager.shared.setColorScheme(ColorScheme.warm())
+        refreshColorDependentUI()
+    }
+
+    @objc func setColorSchemeCool() {
+        PreferencesManager.shared.setColorScheme(ColorScheme.cool())
+        refreshColorDependentUI()
+    }
+
+    @objc func setColorSchemeHighContrast() {
+        PreferencesManager.shared.setColorScheme(ColorScheme.highContrast())
+        refreshColorDependentUI()
+    }
+
+    @objc func setColorSchemeBlueMenuContrast() {
+        PreferencesManager.shared.setColorScheme(ColorScheme.blueMenuContrast())
+        refreshColorDependentUI()
+    }
+
+    @objc func setColorSchemeMonochrome() {
+        PreferencesManager.shared.setColorScheme(ColorScheme.monochrome())
+        refreshColorDependentUI()
+    }
+
+    @objc func resetColorSchemeToDefault() {
+        PreferencesManager.shared.resetColorSchemeToDefault()
+        refreshColorDependentUI()
+    }
+
+    private func refreshColorDependentUI() {
+        // Keep the menu timer text fresh; overlay refresh is handled by TimerController observer.
+        let remaining = timerManager.remainingTime
+        menuManager.updateTimerItem(with: remaining > 0 ? remaining : nil)
+        // Refresh checkmarks for countdown color presets
+        menuManager.setupMenu()
+    }
+
     func soundPreferenceToggleTitle() -> String {
         return PreferencesManager.shared.soundPreferenceToggleTitle()
     }
